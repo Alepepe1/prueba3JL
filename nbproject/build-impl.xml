@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="GestionEmpleados-impl" default="default" basedir="..">
+    <target name="-pre-init"/>
+    <target name="-post-init"/>
+    <target name="init" depends="-pre-init">
+        <property file="nbproject/private/private.properties"/>
+        <property file="nbproject/project.properties"/>
+        <property name="run.jvmargs" value=""/>
+        <mkdir dir="${build.classes.dir}"/>
+    </target>
+    <target name="-pre-compile"/>
+    <target name="-post-compile"/>
+    <target name="compile" depends="init,-post-init,-pre-compile">
+        <javac srcdir="${src.dir}" destdir="${build.classes.dir}"
+               source="${javac.source}" target="${javac.target}"
+               encoding="${source.encoding}" includeantruntime="false" debug="true">
+            <classpath path="${javac.classpath}"/>
+        </javac>
+        <copy todir="${build.classes.dir}">
+            <fileset dir="${src.dir}" excludes="${build.classes.excludes}"/>
+        </copy>
+        <antcall target="-post-compile"/>
+    </target>
+    <target name="compile-single" depends="compile"/>
+    <target name="-pre-jar"/>
+    <target name="-post-jar"/>
+    <target name="jar" depends="compile,-pre-jar">
+        <mkdir dir="${dist.dir}"/>
+        <jar destfile="${dist.jar}" basedir="${build.classes.dir}" manifest="${manifest.file}" compress="true">
+            <manifest><attribute name="Main-Class" value="${main.class}"/></manifest>
+        </jar>
+        <antcall target="-post-jar"/>
+    </target>
+    <target name="run" depends="compile">
+        <java classname="${main.class}" fork="true" failonerror="true">
+            <classpath path="${run.classpath}"/>
+            <jvmarg line="${run.jvmargs}"/>
+        </java>
+    </target>
+    <target name="run-single" depends="compile">
+        <java classname="${run.class}" fork="true" failonerror="true">
+            <classpath path="${run.classpath}"/>
+        </java>
+    </target>
+    <target name="debug" depends="compile">
+        <nbjpdastart addressproperty="jpda.address" name="${main.class}" transport="dt_socket">
+            <classpath path="${run.classpath}"/>
+        </nbjpdastart>
+        <java classname="${main.class}" fork="true">
+            <classpath path="${run.classpath}"/>
+            <jvmarg value="-agentlib:jdwp=transport=dt_socket,address=${jpda.address},server=n,suspend=y"/>
+        </java>
+    </target>
+    <target name="debug-single" depends="init">
+        <antcall target="debug"><param name="main.class" value="${debug.class}"/></antcall>
+    </target>
+    <target name="javadoc" depends="init">
+        <javadoc sourcepath="${src.dir}" destdir="${dist.javadoc.dir}" encoding="UTF-8" failonerror="false"/>
+    </target>
+    <target name="clean">
+        <property file="nbproject/project.properties"/>
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+    </target>
+    <target name="default" depends="jar"/>
+</project>
